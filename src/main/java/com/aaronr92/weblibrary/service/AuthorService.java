@@ -43,7 +43,7 @@ public class AuthorService {
     }
 
     public void delete(long authorId) {
-        checkExistence(repository.findById(authorId));
+            checkExistence(repository.findById(authorId));
         repository.deleteById(authorId);
         throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "Deleted successfully");

@@ -1,5 +1,6 @@
 package com.aaronr92.weblibrary.controller;
 
+import com.aaronr92.weblibrary.dto.BookDTO;
 import com.aaronr92.weblibrary.entity.Book;
 import com.aaronr92.weblibrary.service.BookService;
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,14 @@ public class BookController {
     private final BookService service;
 
     @PostMapping
-    public ResponseEntity<Book> save(@RequestBody Book book) {
-        return null;
-    }
-
-    @PostMapping("/file")
-    public ResponseEntity<String> uploadToLocalFileSystem(@RequestParam("file") MultipartFile file) {
-        service.saveFile(file);
+    public ResponseEntity<Book> uploadToLocalFileSystem(@RequestParam MultipartFile file,
+                                                        @RequestParam("book") BookDTO bookDTO) {
+        Book book = service.save(bookDTO, file);
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("api/v1/book")
                 .toUriString());
 
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(book);
     }
 }

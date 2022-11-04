@@ -1,7 +1,9 @@
 package com.aaronr92.weblibrary.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
+import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -29,7 +31,10 @@ public class Book {
     private String description;
 
     @JsonProperty("release_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING,
+            pattern = "dd.MM.yyyy")
     private LocalDate releaseDate;
 
+    @ReadOnlyProperty
     private String file;
 }
