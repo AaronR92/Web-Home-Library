@@ -11,8 +11,8 @@
     <groupId>com.aaronr92</groupId>
     <artifactId>weblibrary</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>weblibrary</name>
-    <description>weblibrary</description>
+    <name>Web-Library</name>
+    <description>Web REST Service</description>
     <properties>
         <java.version>11</java.version>
     </properties>

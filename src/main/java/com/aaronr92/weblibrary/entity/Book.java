@@ -30,4 +30,6 @@ public class Book {
 
     @JsonProperty("release_date")
     private LocalDate releaseDate;
+
+    private String file;
 }
