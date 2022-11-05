@@ -22,8 +22,8 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Author>> getAuthors() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<Author>> getAuthors(@RequestParam(required = false) String name) {
+        return ResponseEntity.ok(service.getAll(name));
     }
 
     @PostMapping
@@ -36,7 +36,8 @@ public class AuthorController {
     }
 
     @DeleteMapping(path = "{authorId}")
-    public void delete(@PathVariable long authorId) {
+    public ResponseEntity<Void> delete(@PathVariable long authorId) {
         service.delete(authorId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -24,8 +24,12 @@ public class AuthorService {
         return checkExistence(repository.findById(authorId));
     }
 
-    public List<Author> getAll() {
-        return repository.findAll();
+    public List<Author> getAll(String name) {
+        if (name == null) {
+            return repository.findAll();
+        }
+
+        return repository.findAuthorsByNameContains(name.trim());
     }
 
     public Author save(Author author) {
@@ -45,8 +49,6 @@ public class AuthorService {
     public void delete(long authorId) {
             checkExistence(repository.findById(authorId));
         repository.deleteById(authorId);
-        throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-                "Deleted successfully");
     }
 
     private <T> T checkExistence(Optional<T> optional) {

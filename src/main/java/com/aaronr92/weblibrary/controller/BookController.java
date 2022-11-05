@@ -21,14 +21,32 @@ public class BookController {
     private final BookService service;
 
     @PostMapping
-    public ResponseEntity<Book> uploadToLocalFileSystem(@RequestParam MultipartFile file,
-                                                        @RequestParam("book") BookDTO bookDTO) {
-        Book book = service.save(bookDTO, file);
+    public ResponseEntity<Book> save(@RequestParam("book") BookDTO bookDTO) {
+        Book book = service.save(bookDTO);
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()
                 .path("api/v1/book")
                 .toUriString());
 
         return ResponseEntity.created(uri).body(book);
+    }
+
+    @PutMapping(path = "/file/{id}")
+    public ResponseEntity<Void> saveFile(@PathVariable long id,
+                                          @RequestParam MultipartFile file) {
+        service.saveFile(id, file);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(path = "{id}")
+    public ResponseEntity<Book> update(@PathVariable long id,
+                                       @RequestBody BookDTO bookDTO) {
+        return ResponseEntity.ok(service.update(id, bookDTO));
+    }
+
+    @DeleteMapping(path = "{id}")
+    public ResponseEntity<Void> delete(@PathVariable long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

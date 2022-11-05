@@ -10,7 +10,6 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.ignoreCase;
@@ -31,7 +31,10 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
 
-    public Book save(BookDTO bookDTO, MultipartFile file) {
+    private final List<String> allowedExtensions =
+            List.of("pdf", "epub", "fb2", "txt", "fb3", "rtf");
+
+    public Book save(BookDTO bookDTO) {
         String[] authorName = bookDTO.getAuthor().split(" ");
         Author author = authorRepository.findAuthorByNameIgnoreCaseAndLastnameIgnoreCase(
                 authorName[0], authorName[1]
@@ -56,27 +59,67 @@ public class BookService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "This book already exists");
 
-        book.setFile(saveFile(file, bookDTO.getName()));
-
         return bookRepository.save(book);
     }
 
-    public String saveFile(MultipartFile file, String filename) {
+    public void saveFile(long bookId, MultipartFile file) {
         File dir = new File("A:\\Files");
 
-        // Naming by order
-        //String filename = (dir.listFiles().length + 1) + "." +
-        //        (file.getOriginalFilename().split("\\.")[1]);
+        String fileExtension = file.getOriginalFilename().split("\\.")[1].toLowerCase();
 
-        // Naming by book name
-        Path path = Paths.get(dir + "\\" + filename + "." +
-                file.getOriginalFilename().split("\\.")[1]);
+        if (!allowedExtensions.contains(fileExtension))
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
+                    "This file cannot be processed by the server");
+
+        // Naming by order in store directory
+        String filename = (dir.listFiles().length + 1) + "." +
+                fileExtension;
+
+        Path path = Paths.get(dir + "\\" + filename);
+
         try {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        return path.toString();
+    public MultipartFile getFile() {
+        return null;
+    }
+
+    public Book update(long id, BookDTO bookDTO) {
+        Optional<Book> book = bookRepository.findById(id);
+        if (book.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "This book is not found");
+
+        Book b = book.get();
+        b.setName(bookDTO.getName());
+        b.setDescription(bookDTO.getDescription());
+        b.setReleaseDate(bookDTO.getReleaseDate());
+
+        String authorName = b.getAuthor().getName() + " " + b.getAuthor().getLastname();
+        if (!authorName.equals(bookDTO.getAuthor().trim())) {
+            String[] name = bookDTO.getAuthor().trim().split(" ");
+            Author author = authorRepository.findAuthorByNameIgnoreCaseAndLastnameIgnoreCase(
+                    name[0], name[1]
+            );
+
+            if (author == null)
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "This author does not exist");
+            b.setAuthor(author);
+        }
+
+        return bookRepository.save(b);
+    }
+
+    public void delete(long id) {
+        if (!bookRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "This book does not exist");
+
+        bookRepository.deleteById(id);
     }
 }
