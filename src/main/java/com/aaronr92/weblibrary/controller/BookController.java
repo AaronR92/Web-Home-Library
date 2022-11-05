@@ -5,12 +5,16 @@ import com.aaronr92.weblibrary.entity.Book;
 import com.aaronr92.weblibrary.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +23,26 @@ import java.net.URI;
 public class BookController {
 
     private final BookService service;
+
+    @GetMapping(path = "{bookId}")
+    public ResponseEntity<Book> findBook(@PathVariable long bookId) {
+        return ResponseEntity.ok(service.findBook(bookId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Book>> getAll() {
+        return ResponseEntity.ok(service.getAll());
+    }
+
+    @GetMapping("/file")
+    public ResponseEntity<Resource> getFile(@RequestParam String path) {
+        Resource resource = service.getFile(path);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + resource.getFilename() + "\"")
+                .body(resource);
+    }
 
     @PostMapping
     public ResponseEntity<Book> save(@RequestParam("book") BookDTO bookDTO) {

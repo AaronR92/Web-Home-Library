@@ -6,15 +6,18 @@ import com.aaronr92.weblibrary.entity.Book;
 import com.aaronr92.weblibrary.repository.AuthorRepository;
 import com.aaronr92.weblibrary.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +36,25 @@ public class BookService {
 
     private final List<String> allowedExtensions =
             List.of("pdf", "epub", "fb2", "txt", "fb3", "rtf");
+    private final File dir = new File("A:\\Files");
+
+    public Book findBook(long id) {
+        return checkBook(bookRepository.findById(id));
+    }
+
+    public List<Book> getAll() {
+        return bookRepository.findAll();
+    }
+
+    public Resource getFile(String path) {
+        Resource resource = null;
+        try {
+            resource = new UrlResource(Paths.get(path).toUri());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return resource;
+    }
 
     public Book save(BookDTO bookDTO) {
         String[] authorName = bookDTO.getAuthor().split(" ");
@@ -63,8 +85,6 @@ public class BookService {
     }
 
     public void saveFile(long bookId, MultipartFile file) {
-        File dir = new File("A:\\Files");
-
         String fileExtension = file.getOriginalFilename().split("\\.")[1].toLowerCase();
 
         if (!allowedExtensions.contains(fileExtension))
@@ -85,10 +105,6 @@ public class BookService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public List<MultipartFile> getFiles() {
-        return null;
     }
 
     public Book update(long id, BookDTO bookDTO) {
