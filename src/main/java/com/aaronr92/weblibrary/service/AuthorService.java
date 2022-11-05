@@ -34,7 +34,7 @@ public class AuthorService {
                 .withMatcher("dob", ignoreCase())
                 .withMatcher("name", ignoreCase())
                 .withMatcher("lastname", ignoreCase()))))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "This author already exists");
 
         author.setName(author.getName().trim());
@@ -45,13 +45,13 @@ public class AuthorService {
     public void delete(long authorId) {
             checkExistence(repository.findById(authorId));
         repository.deleteById(authorId);
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+        throw new ResponseStatusException(HttpStatus.NO_CONTENT,
                 "Deleted successfully");
     }
 
     private <T> T checkExistence(Optional<T> optional) {
         if (optional.isEmpty())
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     Author.class.getSimpleName() + " does not exist");
 
         return optional.get();

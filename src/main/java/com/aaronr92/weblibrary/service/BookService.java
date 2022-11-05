@@ -38,7 +38,7 @@ public class BookService {
         );
 
         if (author == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "This author does not exist");
 
         Book book = Book.builder()
@@ -53,7 +53,7 @@ public class BookService {
                 .withMatcher("name", ignoreCase())
                 .withMatcher("author", ignoreCase())
                 .withMatcher("releaseDate", ignoreCase()))))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "This book already exists");
 
         book.setFile(saveFile(file, bookDTO.getName()));
@@ -63,8 +63,12 @@ public class BookService {
 
     public String saveFile(MultipartFile file, String filename) {
         File dir = new File("A:\\Files");
-//        String filename = (dir.listFiles().length + 1) + "." +
-//                (file.getOriginalFilename().split("\\.")[1]);
+
+        // Naming by order
+        //String filename = (dir.listFiles().length + 1) + "." +
+        //        (file.getOriginalFilename().split("\\.")[1]);
+
+        // Naming by book name
         Path path = Paths.get(dir + "\\" + filename + "." +
                 file.getOriginalFilename().split("\\.")[1]);
         try {
