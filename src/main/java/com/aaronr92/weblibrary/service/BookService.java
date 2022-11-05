@@ -79,27 +79,25 @@ public class BookService {
 
         try {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+            Book book = checkBook(bookRepository.findById(bookId));
+            book.addFile(path.toString());
+            bookRepository.save(book);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public MultipartFile getFile() {
+    public List<MultipartFile> getFiles() {
         return null;
     }
 
     public Book update(long id, BookDTO bookDTO) {
-        Optional<Book> book = bookRepository.findById(id);
-        if (book.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "This book is not found");
+        Book book = checkBook(bookRepository.findById(id));
+        book.setName(bookDTO.getName());
+        book.setDescription(bookDTO.getDescription());
+        book.setReleaseDate(bookDTO.getReleaseDate());
 
-        Book b = book.get();
-        b.setName(bookDTO.getName());
-        b.setDescription(bookDTO.getDescription());
-        b.setReleaseDate(bookDTO.getReleaseDate());
-
-        String authorName = b.getAuthor().getName() + " " + b.getAuthor().getLastname();
+        String authorName = book.getAuthor().getName() + " " + book.getAuthor().getLastname();
         if (!authorName.equals(bookDTO.getAuthor().trim())) {
             String[] name = bookDTO.getAuthor().trim().split(" ");
             Author author = authorRepository.findAuthorByNameIgnoreCaseAndLastnameIgnoreCase(
@@ -109,17 +107,25 @@ public class BookService {
             if (author == null)
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "This author does not exist");
-            b.setAuthor(author);
+            book.setAuthor(author);
         }
 
-        return bookRepository.save(b);
+        return bookRepository.save(book);
     }
 
     public void delete(long id) {
         if (!bookRepository.existsById(id))
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "This book does not exist");
+        // TODO: delete files from server if book deleted
 
         bookRepository.deleteById(id);
+    }
+
+    private Book checkBook(Optional<Book> book) {
+        if (book.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "This book does not exist");
+        return book.get();
     }
 }

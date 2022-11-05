@@ -1,12 +1,15 @@
 package com.aaronr92.weblibrary.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter @Setter
 @ToString
@@ -36,5 +39,14 @@ public class Book {
     private LocalDate releaseDate;
 
     @ReadOnlyProperty
-    private String file;
+    @ElementCollection
+    private Set<String> files;
+
+    @JsonIgnore
+    public void addFile(String filePath) {
+        if (files == null) {
+            files = new HashSet<>();
+        }
+        files.add(filePath);
+    }
 }
