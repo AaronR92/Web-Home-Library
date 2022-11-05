@@ -55,22 +55,22 @@ public class BookController {
         return ResponseEntity.created(uri).body(book);
     }
 
-    @PutMapping(path = "/file/{id}")
-    public ResponseEntity<Void> saveFile(@PathVariable long id,
-                                          @RequestParam MultipartFile file) {
-        service.saveFile(id, file);
+    @PutMapping(path = "/{bookId}/file")
+    public ResponseEntity<Void> saveFile(@PathVariable long bookId,
+                                         @RequestParam MultipartFile file) {
+        service.saveFile(bookId, file);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(path = "{id}")
-    public ResponseEntity<Book> update(@PathVariable long id,
+    @PutMapping(path = "{bookId}")
+    public ResponseEntity<Book> update(@PathVariable long bookId,
                                        @RequestBody BookDTO bookDTO) {
-        return ResponseEntity.ok(service.update(id, bookDTO));
+        return ResponseEntity.ok(service.update(bookId, bookDTO));
     }
 
-    @DeleteMapping(path = "{id}")
-    public ResponseEntity<Void> delete(@PathVariable long id) {
-        service.delete(id);
+    @DeleteMapping(path = "{bookId}")
+    public ResponseEntity<Void> delete(@PathVariable long bookId) {
+        service.delete(bookId);
         return ResponseEntity.noContent().build();
     }
 }
