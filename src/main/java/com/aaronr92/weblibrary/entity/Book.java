@@ -2,6 +2,7 @@ package com.aaronr92.weblibrary.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -29,6 +30,7 @@ public class Book {
     private String name;
 
     @ManyToOne
+    @JsonManagedReference
     private Author author;
 
     private String description;

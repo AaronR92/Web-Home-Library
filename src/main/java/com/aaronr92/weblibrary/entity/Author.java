@@ -1,5 +1,6 @@
 package com.aaronr92.weblibrary.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -35,5 +36,6 @@ public class Author {
 
     @ReadOnlyProperty
     @OneToMany
+    @JsonBackReference
     private List<Book> books;
 }
