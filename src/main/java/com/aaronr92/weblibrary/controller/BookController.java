@@ -30,8 +30,13 @@ public class BookController {
     }
 
     @GetMapping("/author")
-    public ResponseEntity<List<Book>> findBooksByAuthor(@RequestParam String name) {
-        return ResponseEntity.ok(service.findBooksByAuthor(name));
+    public ResponseEntity<List<Book>> findBooksByAuthorName(@RequestParam String name) {
+        return ResponseEntity.ok(service.findBooksByAuthorName(name));
+    }
+
+    @GetMapping("/author/{authorId}")
+    public ResponseEntity<List<Book>> findBooksByAuthorId(@PathVariable long authorId) {
+        return ResponseEntity.ok(service.findBooksByAuthorId(authorId));
     }
 
     @GetMapping

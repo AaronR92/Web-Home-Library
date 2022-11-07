@@ -9,7 +9,6 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter @Setter
@@ -46,9 +45,6 @@ public class Book {
 
     @JsonIgnore
     public void addFile(String filePath) {
-        if (files == null) {
-            files = new HashSet<>();
-        }
         files.add(filePath);
     }
 }

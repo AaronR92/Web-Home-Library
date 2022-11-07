@@ -10,6 +10,11 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    @Query("SELECT b FROM Book b WHERE b.author.name LIKE ?1")
+    @Query(value = "SELECT * FROM book INNER JOIN author a ON book.author_id = a.id WHERE a.name LIKE CONCAT(?1, '%')",
+            nativeQuery = true)
     List<Book> findBooksByAuthorName(String name);
+
+    @Query(value = "SELECT * FROM book INNER JOIN author a ON book.author_id = a.id WHERE a.id = ?1",
+            nativeQuery = true)
+    List<Book> findBooksByAuthorId(long id);
 }

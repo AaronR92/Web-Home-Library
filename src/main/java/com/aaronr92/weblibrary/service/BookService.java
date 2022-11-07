@@ -46,8 +46,12 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public List<Book> findBooksByAuthor(String name) {
-        return bookRepository.findBooksByAuthorName(name + "%");
+    public List<Book> findBooksByAuthorName(String name) {
+        return bookRepository.findBooksByAuthorName(name);
+    }
+
+    public List<Book> findBooksByAuthorId(long id) {
+        return bookRepository.findBooksByAuthorId(id);
     }
 
     public Resource getFile(String file) {
