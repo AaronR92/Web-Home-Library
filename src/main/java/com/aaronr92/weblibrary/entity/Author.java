@@ -38,4 +38,8 @@ public class Author {
     @OneToMany
     @JsonBackReference
     private List<Book> books;
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
 }

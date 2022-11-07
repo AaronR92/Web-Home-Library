@@ -29,6 +29,11 @@ public class BookController {
         return ResponseEntity.ok(service.findBook(bookId));
     }
 
+    @GetMapping("/author")
+    public ResponseEntity<List<Book>> findBooksByAuthor(@RequestParam String name) {
+        return ResponseEntity.ok(service.findBooksByAuthor(name));
+    }
+
     @GetMapping
     public ResponseEntity<List<Book>> getAll() {
         return ResponseEntity.ok(service.getAll());
@@ -45,7 +50,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> save(@RequestParam("book") BookDTO bookDTO) {
+    public ResponseEntity<Book> save(@RequestBody BookDTO bookDTO) {
         Book book = service.save(bookDTO);
         URI uri = URI.create(ServletUriComponentsBuilder
                 .fromCurrentContextPath()

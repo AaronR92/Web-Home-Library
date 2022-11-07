@@ -46,6 +46,10 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    public List<Book> findBooksByAuthor(String name) {
+        return bookRepository.findBooksByAuthorName(name + "%");
+    }
+
     public Resource getFile(String file) {
         String path = "A:/Files/" + file;
         Resource resource = null;
@@ -82,7 +86,10 @@ public class BookService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "This book already exists");
 
-        return bookRepository.save(book);
+        book = bookRepository.save(book);
+        author.addBook(book);
+        authorRepository.save(author);
+        return book;
     }
 
     public void saveFile(long bookId, MultipartFile file) {
