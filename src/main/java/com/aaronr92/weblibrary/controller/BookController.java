@@ -35,8 +35,8 @@ public class BookController {
     }
 
     @GetMapping("/file")
-    public ResponseEntity<Resource> getFile(@RequestParam String path) {
-        Resource resource = service.getFile(path);
+    public ResponseEntity<Resource> getFile(@RequestParam String file) {
+        Resource resource = service.getFile(file);
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION,

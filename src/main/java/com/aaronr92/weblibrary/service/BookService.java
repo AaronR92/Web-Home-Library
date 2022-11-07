@@ -46,7 +46,8 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Resource getFile(String path) {
+    public Resource getFile(String file) {
+        String path = "A:/Files/" + file;
         Resource resource = null;
         try {
             resource = new UrlResource(Paths.get(path).toUri());
