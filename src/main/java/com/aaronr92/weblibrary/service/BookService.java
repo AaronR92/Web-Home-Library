@@ -6,9 +6,9 @@ import com.aaronr92.weblibrary.entity.Book;
 import com.aaronr92.weblibrary.repository.AuthorRepository;
 import com.aaronr92.weblibrary.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.UrlResource;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +29,7 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookService {
 
     private final BookRepository bookRepository;
@@ -42,7 +43,9 @@ public class BookService {
         return checkBook(bookRepository.findById(id));
     }
 
-    public List<Book> getAll() {
+    public List<Book> getAll(String name) {
+        if (name != null)
+            return bookRepository.findBooksByNameContains(name);
         return bookRepository.findAll();
     }
 
@@ -52,6 +55,14 @@ public class BookService {
 
     public List<Book> findBooksByAuthorId(long id) {
         return bookRepository.findBooksByAuthorId(id);
+    }
+
+    public Page<Book> findPage(int pageN) {
+        if (pageN < 1)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Page index must not be less than one");
+        Pageable p = PageRequest.of(pageN - 1, 10);
+        return bookRepository.findAll(p);
     }
 
     public Resource getFile(String file) {
@@ -90,6 +101,8 @@ public class BookService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "This book already exists");
 
+        log.info("Saving new book {}", book);
+
         book = bookRepository.save(book);
         author.addBook(book);
         authorRepository.save(author);
@@ -113,6 +126,7 @@ public class BookService {
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             Book book = checkBook(bookRepository.findById(bookId));
             book.addFile(path.toString());
+            log.info("Saving file {}", path);
             bookRepository.save(book);
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,6 +152,8 @@ public class BookService {
             book.setAuthor(author);
         }
 
+        log.info("Updating book {}", book);
+
         return bookRepository.save(book);
     }
 
@@ -147,6 +163,7 @@ public class BookService {
                     "This book does not exist");
         // TODO: delete files from server if book deleted
 
+        log.info("Deleting book with id {}", id);
         bookRepository.deleteById(id);
     }
 

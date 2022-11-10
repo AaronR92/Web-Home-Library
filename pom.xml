@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.aaronr92</groupId>
     <artifactId>weblibrary</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
     <name>Web-Library</name>
     <description>Web REST Service</description>
     <properties>

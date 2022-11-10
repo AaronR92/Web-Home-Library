@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Getter @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -37,6 +38,7 @@ public class Author {
     @ReadOnlyProperty
     @OneToMany
     @JsonBackReference
+    @ToString.Exclude
     private List<Book> books;
 
     public void addBook(Book book) {

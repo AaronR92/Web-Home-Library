@@ -4,8 +4,8 @@ import com.aaronr92.weblibrary.dto.BookDTO;
 import com.aaronr92.weblibrary.entity.Book;
 import com.aaronr92.weblibrary.service.BookService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,13 +16,19 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/book")
-@Slf4j
 public class BookController {
 
     private final BookService service;
+
+    @GetMapping
+    public ResponseEntity<List<Book>> getAll(@RequestParam(required = false) String name) {
+        List<Book> books = service.getAll(name);
+        return ResponseEntity.ok(books);
+    }
 
     @GetMapping(path = "{bookId}")
     public ResponseEntity<Book> findBook(@PathVariable long bookId) {
@@ -39,9 +45,9 @@ public class BookController {
         return ResponseEntity.ok(service.findBooksByAuthorId(authorId));
     }
 
-    @GetMapping
-    public ResponseEntity<List<Book>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    @GetMapping("/page/{pageN}")
+    public ResponseEntity<Page<Book>> findBookPage(@PathVariable Integer pageN) {
+        return ResponseEntity.ok(service.findPage(pageN));
     }
 
     @GetMapping("/file")
